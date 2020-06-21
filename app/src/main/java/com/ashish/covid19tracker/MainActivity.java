@@ -1,6 +1,7 @@
 package com.ashish.covid19tracker;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import com.android.volley.Request;
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     ScrollView scrollView;
     PieChart pieChart;
     //   SwipeRefreshLayout swipeRefreshLayout;
+    AlertDialog.Builder builder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
         simpleArcLoader = findViewById(R.id.loader);
         scrollView = findViewById(R.id.scrollStats);
         pieChart = findViewById(R.id.piechart);
+        builder = new AlertDialog.Builder(this);
+
         checkConnection();
 
 /*        swipeRefreshLayout=(SwipeRefreshLayout) findViewById(R.id.swipe);
@@ -151,5 +156,38 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
 
+        //Code for alert dialog box
+
+        //Uncomment the below code to Set the message and title from the strings.xml file
+        //builder.setMessage(R.string.dialog_message) .setTitle(R.string.dialog_title);
+
+        //Setting message manually and performing action on button click
+        builder.setMessage("Do you want to close this application ?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        finish();
+
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //  Action for 'NO' Button
+                        dialog.cancel();
+
+                    }
+                });
+        //Creating dialog box
+        AlertDialog alert = builder.create();
+        //Setting the title manually
+        //alert.setTitle("AlertDialogExample");
+      //To make alert dialog visible
+        alert.show();
+
+
+
+    }
 }

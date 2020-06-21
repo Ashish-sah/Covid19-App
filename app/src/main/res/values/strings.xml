@@ -6,4 +6,6 @@
     <string name="active">Active</string>
     <string name="track_countries">Track Countries</string>
     <string name="global_stats">global stats</string>
+    <string name="dialog_message">Welcome to alert dialog</string>
+    <string name="dialog_title">Alert Dialog</string>
 </resources>
