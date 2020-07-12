@@ -1,11 +1,12 @@
-# Covid19-App
+# Covid19-App-Countrywise
 An android application for showing the covid 19 data countrywise .
+```
 
-Features
-1. Show the total cases of covid 19 worldwide.
-2. Show Recovered cases ,Active Cases,Deaths etc CountryWise.
-3. Use of ListView And the adapter class to fetch the data from the api.
-4. Api Used are :-
+ ##Features
+- Show the total cases of covid 19 worldwide.
+- Show Recovered cases ,Active Cases,Deaths etc CountryWise.
+- Use of ListView And the adapter class to fetch the data from the api.
+- Api Used are :-
 
     An Android chart and graph library  https://github.com/blackfizz/EazeGraph
     
