@@ -23,26 +23,24 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
                 android:weightSum="2">
-            <org.eazegraph.lib.charts.PieChart
-                    android:id="@+id/piechart"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:padding="6dp"
-                    android:layout_weight="1"
-            >
-            </org.eazegraph.lib.charts.PieChart>
+          <org.eazegraph.lib.charts.PieChart
+                  android:id="@+id/piechart"
+                  android:layout_width="0dp"
+                  android:layout_height="match_parent"
+                  android:layout_weight="1"
+                  android:padding="6dp"
+                  />
             <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp"
                     android:orientation="vertical"
                     android:gravity="center_vertical">
                 <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="15dp"
-                        android:gravity="center_vertical"
-                >
+                        android:gravity="center_vertical">
                     <View
                             android:layout_width="15dp"
                             android:layout_height="match_parent"
