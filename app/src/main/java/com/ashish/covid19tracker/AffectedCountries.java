@@ -1,6 +1,7 @@
 package com.ashish.covid19tracker;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MenuItem;
@@ -11,7 +12,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -28,12 +28,13 @@ import java.util.List;
 
 public class AffectedCountries extends AppCompatActivity {
 
+    public static List<CountryModel> countryModelList = new ArrayList<>();
     EditText edtSearch;
     ListView listView;
     SimpleArcLoader simpleArcLoader;
-    public static List<CountryModel> countryModelList=new ArrayList<>();
     CountryModel countryModel;
     MyCustomAdapter myCustomAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +52,7 @@ public class AffectedCountries extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                startActivity(new Intent(getApplicationContext(),DetailActivity.class).putExtra("position",position));
+                startActivity(new Intent(getApplicationContext(), DetailActivity.class).putExtra("position", position));
             }
         });
         //Code for search
@@ -74,29 +75,30 @@ public class AffectedCountries extends AppCompatActivity {
             }
         });
     }
+
     //to show the back item in action bar
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId()==android.R.id.home)
+        if (item.getItemId() == android.R.id.home)
             finish();
         return super.onOptionsItemSelected(item);
     }
+
     private void fetchData() {
         //url to get covid cases
-        String url="https://corona.lmao.ninja/v2/countries";
+        String url = "https://corona.lmao.ninja/v2/countries";
         simpleArcLoader.start();
         //here we use volley library
         //Request.Method.Get is to get the data from the url
-        StringRequest request=new StringRequest(Request.Method.GET, url,
+        StringRequest request = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         //here we use array to store the result of each countries
                         try {
-                            JSONArray jsonArray=new JSONArray(response);
-                            for (int i=0;i<jsonArray.length();i++)
-                            {
-                                JSONObject jsonObject=jsonArray.getJSONObject(i);
+                            JSONArray jsonArray = new JSONArray(response);
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject jsonObject = jsonArray.getJSONObject(i);
 
                                 String countryName = jsonObject.getString("country");
                                 String cases = jsonObject.getString("cases");
@@ -110,11 +112,11 @@ public class AffectedCountries extends AppCompatActivity {
                                 JSONObject object = jsonObject.getJSONObject("countryInfo");
                                 String flagUrl = object.getString("flag");
                                 //calling the object of countryModel Class
-                                countryModel = new CountryModel(flagUrl,countryName,cases,todayCases,deaths,todayDeaths,recovered,active,critical);
+                                countryModel = new CountryModel(flagUrl, countryName, cases, todayCases, deaths, todayDeaths, recovered, active, critical);
                                 countryModelList.add(countryModel);
                             }
                             //initializing custom adapter and adding to listview to show data
-                            myCustomAdapter=new MyCustomAdapter(AffectedCountries.this,countryModelList);
+                            myCustomAdapter = new MyCustomAdapter(AffectedCountries.this, countryModelList);
                             listView.setAdapter(myCustomAdapter);
                             simpleArcLoader.stop();
                             simpleArcLoader.setVisibility(View.GONE);
@@ -128,11 +130,11 @@ public class AffectedCountries extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
 
-                Toast.makeText(AffectedCountries.this,error.getMessage(),Toast.LENGTH_LONG).show();
+                Toast.makeText(AffectedCountries.this, error.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
         //Now we declare queue  to handle the above response
-        RequestQueue requestQueue= Volley.newRequestQueue(this);
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(request);
         //the data which we get goes to above onResponse method which is in json format
     }

@@ -1,18 +1,25 @@
 package com.ashish.covid19tracker;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -27,12 +34,13 @@ import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView tvCases,tvRecovered,tvCritical,tvActive,tvTodayCases,tvTotalDeaths,tvTodayDeaths,tvAffectedCountries;
+    TextView tvCases, tvRecovered, tvCritical, tvActive, tvTodayCases, tvTotalDeaths, tvTodayDeaths, tvAffectedCountries;
     SimpleArcLoader simpleArcLoader;
     ScrollView scrollView;
     PieChart pieChart;
     //   SwipeRefreshLayout swipeRefreshLayout;
     AlertDialog.Builder builder;
+    private String Active;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,37 +63,39 @@ public class MainActivity extends AppCompatActivity {
         builder = new AlertDialog.Builder(this);
 
         checkConnection();
+         //To give the sound to notification
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
 
-/*        swipeRefreshLayout=(SwipeRefreshLayout) findViewById(R.id.swipe);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, "default")
+                .setSmallIcon(R.drawable.ic_virus)
+                .setContentText("Confirmed Cases :" + Active)
+                .setSound(defaultSoundUri)
 
-                new Handler().postDelayed(new Runnable() {
-                 @Override
-                 public void run() {
-                     swipeRefreshLayout.setRefreshing(false);
-                 }
-             },4000)  ;
-            }
-        });*/
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        createNotificationChannel();
+        Context context;
+        final NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+        notificationManagerCompat.notify(100, builder.build());
     }
 
     private void fetchData() {
         //url to get covid cases
-        String url="https://corona.lmao.ninja/v2/all";
+        String url = "https://corona.lmao.ninja/v2/all";
         simpleArcLoader.start();
         //here we use volley library
         //Request.Method.Get is to get the data from the url
-        StringRequest request=new StringRequest(Request.Method.GET, url,
+        StringRequest request = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         //to handle json object
                         try {
-                            JSONObject jsonObject=new JSONObject(response.toString());
+                            final JSONObject jsonObject = new JSONObject(response.toString());
                             //here we handle the cases
                             //here are the names in the json file  are set in textview from the server
+
+                            Active = jsonObject.getString("cases");
                             tvCases.setText(jsonObject.getString("cases"));
                             tvRecovered.setText(jsonObject.getString("recovered"));
                             tvCritical.setText(jsonObject.getString("critical"));
@@ -95,10 +105,10 @@ public class MainActivity extends AppCompatActivity {
                             tvTodayDeaths.setText(jsonObject.getString("todayDeaths"));
                             tvAffectedCountries.setText(jsonObject.getString("affectedCountries"));
                             //To set the above value in piechart
-                            pieChart.addPieSlice(new PieModel("Cases",Integer.parseInt(tvCases.getText().toString()), Color.parseColor("#FFA726")));
-                            pieChart.addPieSlice(new PieModel("Recovered",Integer.parseInt(tvRecovered.getText().toString()),Color.parseColor("#66BB6A")));
-                            pieChart.addPieSlice(new PieModel("Deaths",Integer.parseInt(tvTotalDeaths.getText().toString()),Color.parseColor("#EF5350")));
-                            pieChart.addPieSlice(new PieModel("Active",Integer.parseInt(tvActive.getText().toString()),Color.parseColor("#29B6F6")));
+                            pieChart.addPieSlice(new PieModel("Cases", Integer.parseInt(tvCases.getText().toString()), Color.parseColor("#FFA726")));
+                            pieChart.addPieSlice(new PieModel("Recovered", Integer.parseInt(tvRecovered.getText().toString()), Color.parseColor("#66BB6A")));
+                            pieChart.addPieSlice(new PieModel("Deaths", Integer.parseInt(tvTotalDeaths.getText().toString()), Color.parseColor("#EF5350")));
+                            pieChart.addPieSlice(new PieModel("Active", Integer.parseInt(tvActive.getText().toString()), Color.parseColor("#29B6F6")));
                             pieChart.startAnimation();
                             //Ass all the data is loaded we set the visibility gone
                             simpleArcLoader.stop();
@@ -120,39 +130,38 @@ public class MainActivity extends AppCompatActivity {
                 simpleArcLoader.stop();
                 simpleArcLoader.setVisibility(View.GONE);
                 scrollView.setVisibility(View.VISIBLE);
-                Toast.makeText(MainActivity.this,error.getMessage(),Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
         //Now we declare queue  to handle the above response
-        RequestQueue requestQueue= Volley.newRequestQueue(this);
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(request);
         //the data which we get goes to above onResponse method which is in json format
     }
 
     public void goTrackCountries(View view) {
         // It moves to new Activity
-        startActivity(new Intent(getApplicationContext(),AffectedCountries.class));
+        startActivity(new Intent(getApplicationContext(), AffectedCountries.class));
     }
+
     //To check the connection Status
-    public void checkConnection(){
-        ConnectivityManager manager=(ConnectivityManager)
+    public void checkConnection() {
+        ConnectivityManager manager = (ConnectivityManager)
                 getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         //get Active network info
-        NetworkInfo activeNetwork=manager.getActiveNetworkInfo();
+        NetworkInfo activeNetwork = manager.getActiveNetworkInfo();
         //check network status
-        if(null!=activeNetwork)
-        {
-            if(activeNetwork.getType()==ConnectivityManager.TYPE_WIFI){
+        if (null != activeNetwork) {
+            if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
                 fetchData();
             }
             //now it see for mobile data
-            if(activeNetwork.getType()==ConnectivityManager.TYPE_MOBILE){
+            if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
                 fetchData();
             }
 
-        }
-        else{
-            Toast.makeText(this,"No Internet  Connection Available",Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "No Internet  Connection Available", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -184,10 +193,26 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog alert = builder.create();
         //Setting the title manually
         //alert.setTitle("AlertDialogExample");
-      //To make alert dialog visible
+        //To make alert dialog visible
         alert.show();
 
 
+    }
 
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String name = getString(R.string.channel_name);     //set the  channel name
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("default", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            assert notificationManager != null;
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }

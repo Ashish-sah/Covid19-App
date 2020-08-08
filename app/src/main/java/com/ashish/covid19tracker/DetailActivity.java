@@ -1,27 +1,27 @@
 package com.ashish.covid19tracker;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
 
 public class DetailActivity extends AppCompatActivity {
     //this is to get the detail when country is clicked
 
-    private  int positionCountry;
-    TextView tvCountry,tvCases,tvRecovered,tvCritical,tvActive,tvTodayCases,tvTotalDeaths,tvTodayDeaths;
+    TextView tvCountry, tvCases, tvRecovered, tvCritical, tvActive, tvTodayCases, tvTotalDeaths, tvTodayDeaths;
+    private int positionCountry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         //here position string come from affected country file
-        Intent intent=getIntent();
-        positionCountry=intent.getIntExtra("position",0);
+        Intent intent = getIntent();
+        positionCountry = intent.getIntExtra("position", 0);
 
-        getSupportActionBar().setTitle("Details of " +AffectedCountries.countryModelList.get(positionCountry).getCountry());
+        getSupportActionBar().setTitle("Details of " + AffectedCountries.countryModelList.get(positionCountry).getCountry());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -45,10 +45,11 @@ public class DetailActivity extends AppCompatActivity {
         tvTodayDeaths.setText(AffectedCountries.countryModelList.get(positionCountry).getTodayDeaths());
 
     }
+
     //to show the back item in action bar
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId()==android.R.id.home)
+        if (item.getItemId() == android.R.id.home)
             finish();
         return super.onOptionsItemSelected(item);
     }

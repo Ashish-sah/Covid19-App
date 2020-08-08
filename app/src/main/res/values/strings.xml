@@ -8,4 +8,6 @@
     <string name="global_stats">global stats</string>
     <string name="dialog_message">Welcome to alert dialog</string>
     <string name="dialog_title">Alert Dialog</string>
+    <string name="channel_name">COVID 19 Countrywise</string>
+    <string name="channel_description">Gives Covid 19 data</string>
 </resources>
